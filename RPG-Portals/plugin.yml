@@ -1,3 +1,8 @@
 main: net.potyka.jendrik.rpgp.App
 name: RPG-Portals
 version: 0.1
+
+commands:
+  rpgp:
+    description: Open RPG-Portals GUI.
+    permission: rpgp.opengui
