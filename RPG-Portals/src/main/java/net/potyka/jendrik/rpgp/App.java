@@ -1,7 +1,6 @@
 package net.potyka.jendrik.rpgp;
 
 import org.bukkit.plugin.java.JavaPlugin;
-
 /**
  * Hello world!
  */
