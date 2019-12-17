@@ -50,6 +50,7 @@ public class ClickEvent implements Listener
                                 player.sendMessage(ChatColor.RED+"Portal could not be created!");
                             }
                         }
+                        player.closeInventory();
                     break;
 
                     case ENDER_EYE:
@@ -61,6 +62,7 @@ public class ClickEvent implements Listener
                        {
                            player.sendMessage(ChatColor.RED+"Portal could not be created!");
                        }
+                       player.closeInventory();
                     break;
 
                     case REDSTONE_BLOCK:
