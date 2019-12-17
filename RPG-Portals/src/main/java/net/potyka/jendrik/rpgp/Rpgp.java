@@ -69,6 +69,16 @@ public class Rpgp implements CommandExecutor
         homeportal.setItemMeta(meta);
         inv.setItem(0, homeportal);
 
+        // butto for portal to the end
+        ItemStack endportal = new ItemStack(Material.ENDER_EYE);
+        meta =  endportal.getItemMeta();
+        meta.setDisplayName(ChatColor.AQUA + "Portal to the end.");
+        ArrayList<String> endportal_lore = new ArrayList<>();
+        endportal_lore.add(ChatColor.DARK_AQUA + "You need:");
+        meta.setLore(endportal_lore);
+        endportal.setItemMeta(meta);
+        inv.setItem(1, endportal);
+
         player.openInventory(inv);
 
 

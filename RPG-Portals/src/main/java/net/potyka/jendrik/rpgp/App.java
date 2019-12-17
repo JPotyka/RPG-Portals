@@ -27,6 +27,7 @@ public final class App extends JavaPlugin{
  
     @Override
     public void onEnable() {
+        getLogger().info("Start RPG-Portals");
         this.saveDefaultConfig();
         this.getCommand("rpgp").setExecutor(new Rpgp(this));
         getServer().getPluginManager().registerEvents(new ClickEvent(this), this);
@@ -36,14 +37,13 @@ public final class App extends JavaPlugin{
             getLogger().info("Portalmanager enabled!");
 
             this.runportalmanager = new PortalUpdater(this);
-            this.taskportalmanager = this.runportalmanager.runTaskTimer(this,0,20);
+            this.taskportalmanager = this.runportalmanager.runTaskTimer(this,0,5);
         }
 
-        getLogger().info("Hello, SpigotMC!");
     }
     @Override
     public void onDisable() {
-        getLogger().info("See you again, SpigotMC!");
+        getLogger().info("Shutdown RPG-Portals");
     }
 
     public PortalManager getPortalManager()

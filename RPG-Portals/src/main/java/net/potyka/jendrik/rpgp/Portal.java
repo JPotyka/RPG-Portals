@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.block.data.BlockData;
+import org.bukkit.block.BlockState;
 import org.bukkit.entity.Player;
 
 public class Portal 
@@ -13,22 +13,17 @@ public class Portal
     private ArrayList<Location> portalblockpositions;
     private Location destination;
     private long creationtime;
-    private ArrayList<BlockData> originalblockmaterial;
+    private ArrayList<BlockState> originalblockmaterial;
     private Player owner;
 
-    public Portal(int id, ArrayList<Location> portalblockpositions, Location destination, long creationtime, Player player)
+    public Portal(int id, ArrayList<Location> portalblockpositions, ArrayList<BlockState> originalblockmaterial, Location destination, long creationtime, Player player)
     {
         this.id = id;
         this.portalblockpositions = portalblockpositions;
+        this.originalblockmaterial = originalblockmaterial;
         this.destination = destination;
         this.creationtime = creationtime;
         this.owner = player;
-
-        //for(int i =0; i < this.portalblockpositions.size();i++)
-        //{
-        //    Bukkit.getServer().getLogger().info(String.valueOf(i));
-        //    this.originalblockmaterial.add(this.portalblockpositions.get(i).getBlock().getBlockData());
-        //}
 
     }
 
@@ -42,12 +37,12 @@ public class Portal
         return this.portalblockpositions;
     }
 
-    public ArrayList<BlockData> getOriginalBlockMaterial()
+    public ArrayList<BlockState> getOriginalBlockMaterial()
     {
         return this.originalblockmaterial;
     }   
 
-    public Location getLocation()
+    public Location getDestination()
     {
         return this.destination;
     }
