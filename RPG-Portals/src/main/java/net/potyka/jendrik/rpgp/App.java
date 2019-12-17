@@ -5,6 +5,8 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 
+import com.palmergames.bukkit.towny.TownyAPI;
+
 import net.potyka.jendrik.rpgp.events.ClickEvent;
 import net.potyka.jendrik.rpgp.PortalManager;
 import net.potyka.jendrik.rpgp.PortalUpdater;
@@ -47,6 +49,10 @@ public final class App extends JavaPlugin{
         {
             this.usetowny = true;
             getLogger().info("RPG-Portals is now using Towny.");
+        }
+        else
+        {
+            getLogger().info("Towny not found.");
         }
 
     }
