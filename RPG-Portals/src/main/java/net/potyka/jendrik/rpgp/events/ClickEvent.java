@@ -14,7 +14,7 @@ import org.bukkit.material.*;
 public class ClickEvent implements Listener
 {
 
-    App app;
+    private App app;
 
     public ClickEvent(App app)
     {

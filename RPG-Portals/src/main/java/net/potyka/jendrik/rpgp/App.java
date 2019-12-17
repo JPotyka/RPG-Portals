@@ -1,19 +1,28 @@
 package net.potyka.jendrik.rpgp;
 
+import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scheduler.BukkitTask;
+
 import net.potyka.jendrik.rpgp.events.ClickEvent;
 import net.potyka.jendrik.rpgp.PortalManager;
+import net.potyka.jendrik.rpgp.PortalUpdater;
+
 
 /**
  * Hello world!
  */
 public final class App extends JavaPlugin{
 
-    PortalManager portalmanager;
+    private PortalManager portalmanager;
+    private BukkitRunnable runportalmanager;
+    private BukkitTask taskportalmanager;
+
 
     public App()
     {
-        this.portalmanager = new PortalManager(this); 
+        this.portalmanager = new PortalManager(this);
     }
  
     @Override
@@ -22,12 +31,15 @@ public final class App extends JavaPlugin{
         this.getCommand("rpgp").setExecutor(new Rpgp(this));
         getServer().getPluginManager().registerEvents(new ClickEvent(this), this);
 
-        getLogger().info("Hello, SpigotMC!");
-
         if(this.portalmanager.isActive())
         {
             getLogger().info("Portalmanager enabled!");
+
+            this.runportalmanager = new PortalUpdater(this);
+            this.taskportalmanager = this.runportalmanager.runTaskTimer(this,0,20);
         }
+
+        getLogger().info("Hello, SpigotMC!");
     }
     @Override
     public void onDisable() {
