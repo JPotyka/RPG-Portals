@@ -19,10 +19,13 @@ public final class App extends JavaPlugin{
     private BukkitRunnable runportalmanager;
     private BukkitTask taskportalmanager;
 
+    private boolean usetowny = false;
+
 
     public App()
     {
         this.portalmanager = new PortalManager(this);
+        
     }
  
     @Override
@@ -40,6 +43,12 @@ public final class App extends JavaPlugin{
             this.taskportalmanager = this.runportalmanager.runTaskTimer(this,0,5);
         }
 
+        if(Bukkit.getPluginManager().getPlugin("Towny") != null)
+        {
+            this.usetowny = true;
+            getLogger().info("RPG-Portals is now using Towny.");
+        }
+
     }
     @Override
     public void onDisable() {
@@ -51,5 +60,8 @@ public final class App extends JavaPlugin{
         return this.portalmanager;
     }
 
-
+    public boolean getUseTonwy()
+    {
+        return usetowny;
+    }
 }
