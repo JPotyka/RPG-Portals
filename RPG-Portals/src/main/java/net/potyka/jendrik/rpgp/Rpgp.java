@@ -50,7 +50,7 @@ public class Rpgp implements CommandExecutor
     
     public void openGUI(Player player)
     {
-        Inventory inv = Bukkit.createInventory(null, 36, ChatColor.DARK_AQUA+"RPG-Portals GUI");
+        Inventory inv = Bukkit.createInventory(null, 36, ChatColor.DARK_AQUA+"RPG-Portals: Main menu");
 
         // button to close the GUI
         ItemStack exititem = new ItemStack(Material.REDSTONE_BLOCK);

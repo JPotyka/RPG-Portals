@@ -6,6 +6,7 @@ import net.potyka.jendrik.rpgp.PortalManager;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -26,7 +27,7 @@ public class ClickEvent implements Listener
     {
         Player player = (Player) e.getWhoClicked();
 
-        if(e.getView().getTitle().equalsIgnoreCase(ChatColor.DARK_AQUA+"RPG-Portals GUI"))
+        if(e.getView().getTitle().equalsIgnoreCase(ChatColor.DARK_AQUA+"RPG-Portals: Main menu"))
         {    
             if(e.getCurrentItem()!=null)
             {          
@@ -49,6 +50,17 @@ public class ClickEvent implements Listener
                                 player.sendMessage(ChatColor.RED+"Portal could not be created!");
                             }
                         }
+                    break;
+
+                    case ENDER_EYE:
+                       if(app.getPortalManager().createPortal(player, Bukkit.getWorld("world_the_end").getSpawnLocation()))
+                       {
+                           player.sendMessage(ChatColor.GREEN+"Portal to the end is now für 30 seconds open.");
+                       }
+                       else
+                       {
+                           player.sendMessage(ChatColor.RED+"Portal could not be created!");
+                       }
                     break;
 
                     case REDSTONE_BLOCK:
