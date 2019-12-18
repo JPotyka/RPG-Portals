@@ -15,6 +15,8 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.material.*;
 import org.bukkit.ChatColor;
 
+import net.potyka.jendrik.rpgp.TownyData;
+
 public class Rpgp implements CommandExecutor
 {
     private App app;
@@ -84,16 +86,29 @@ public class Rpgp implements CommandExecutor
 
             if(app.getUseTonwy())
             {
+                
+
                 // button for portal to player town
                 ItemStack hometownportal = new ItemStack(Material.BLUE_BANNER);
                 meta =  hometownportal.getItemMeta();
-                meta.setDisplayName(ChatColor.AQUA + "Portal to your home town.");
                 ArrayList<String> hometownportal_lore = new ArrayList<>();
-                hometownportal_lore.add(ChatColor.DARK_AQUA + "You need:");
+
+                if(app.getTownyData().playerIsTownMember(player) == true)
+                {                    
+                    meta.setDisplayName(ChatColor.AQUA + "Portal to your home town: " + app.getTownyData().playersTown(player).getName());
+                    hometownportal_lore.add(ChatColor.DARK_AQUA + "You need:");
+                }
+                else
+                {
+                    meta.setDisplayName(ChatColor.RED + "You don't belong to any town!");
+                    hometownportal_lore.add(ChatColor.DARK_AQUA + "Maybe join a town?");
+                }
+
                 meta.setLore(hometownportal_lore);
                 hometownportal.setItemMeta(meta);
                 inv.setItem(2, hometownportal);
                 player.openInventory(inv); 
+
 
                 // button for other town list
                 ItemStack othertownportal = new ItemStack(Material.RED_BANNER);
@@ -108,11 +123,5 @@ public class Rpgp implements CommandExecutor
 
             player.openInventory(inv);  
         }
-
-
-
-
     }
-
-
 }

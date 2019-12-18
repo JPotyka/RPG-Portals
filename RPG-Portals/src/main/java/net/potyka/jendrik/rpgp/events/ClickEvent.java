@@ -1,8 +1,5 @@
 package net.potyka.jendrik.rpgp.events;
 
-import net.potyka.jendrik.rpgp.App;
-import net.potyka.jendrik.rpgp.PortalManager;
-
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -11,6 +8,11 @@ import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.material.*;
+
+import net.potyka.jendrik.rpgp.App;
+import net.potyka.jendrik.rpgp.PortalManager;
+import net.potyka.jendrik.rpgp.TownyData;
+
 
 public class ClickEvent implements Listener
 {
@@ -65,6 +67,11 @@ public class ClickEvent implements Listener
                        player.closeInventory();
                     break;
 
+                    case BLUE_BANNER:
+
+                    break;
+
+
                     case REDSTONE_BLOCK:
                         player.closeInventory();
                     break;
@@ -78,5 +85,6 @@ public class ClickEvent implements Listener
         }
 
     }
+
 }
 
