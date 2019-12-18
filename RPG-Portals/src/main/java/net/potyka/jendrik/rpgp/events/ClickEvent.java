@@ -9,9 +9,13 @@ import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.material.*;
 
+import com.palmergames.bukkit.towny.object.Town;
+
 import net.potyka.jendrik.rpgp.App;
 import net.potyka.jendrik.rpgp.PortalManager;
 import net.potyka.jendrik.rpgp.TownyData;
+
+
 
 
 public class ClickEvent implements Listener
@@ -68,7 +72,19 @@ public class ClickEvent implements Listener
                     break;
 
                     case BLUE_BANNER:
+                        if(app.getTownyData().playerIsTownMember(player) == true)
+                        {
 
+                            if(app.getPortalManager().createPortal(player, app.getTownyData().playersTownSpawn(player)))
+                            {
+                                player.sendMessage(ChatColor.GREEN+"Portal to " + app.getTownyData().playersTownName(player)+ " is open für 30 seconds open.");
+                            }
+                            else
+                            {
+                                player.sendMessage(ChatColor.RED+"Portal could not be created!");
+                            }
+                        }
+                        player.closeInventory();
                     break;
 
 

@@ -85,9 +85,7 @@ public class Rpgp implements CommandExecutor
             inv.setItem(1, endportal);
 
             if(app.getUseTonwy())
-            {
-                
-
+            {    
                 // button for portal to player town
                 ItemStack hometownportal = new ItemStack(Material.BLUE_BANNER);
                 meta =  hometownportal.getItemMeta();
@@ -95,7 +93,7 @@ public class Rpgp implements CommandExecutor
 
                 if(app.getTownyData().playerIsTownMember(player) == true)
                 {                    
-                    meta.setDisplayName(ChatColor.AQUA + "Portal to your home town: " + app.getTownyData().playersTown(player).getName());
+                    meta.setDisplayName(ChatColor.AQUA + "Portal to your home town: " + app.getTownyData().playersTownName(player));
                     hometownportal_lore.add(ChatColor.DARK_AQUA + "You need:");
                 }
                 else
