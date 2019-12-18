@@ -6,6 +6,8 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
+import org.bukkit.command.CommandException;
+import org.bukkit.command.CommandExecutor;
 import org.bukkit.entity.Player;
 import org.bukkit.material.*;
 
@@ -13,6 +15,7 @@ import com.palmergames.bukkit.towny.object.Town;
 
 import net.potyka.jendrik.rpgp.App;
 import net.potyka.jendrik.rpgp.PortalManager;
+import net.potyka.jendrik.rpgp.Rpgp;
 import net.potyka.jendrik.rpgp.TownyData;
 
 
@@ -22,10 +25,12 @@ public class ClickEvent implements Listener
 {
 
     private App app;
+    private Rpgp rpgp;
 
-    public ClickEvent(App app)
+    public ClickEvent(App app, CommandExecutor commandexecutor)
     {
         this.app = app;
+        this.rpgp = (Rpgp)commandexecutor;
     }
 
     @EventHandler
@@ -39,6 +44,8 @@ public class ClickEvent implements Listener
             {          
                 switch(e.getCurrentItem().getType())
                 {
+
+
                     case RED_BED:                    
                         Location bedspawnlocation = player.getBedSpawnLocation();
                         if(bedspawnlocation == null)
@@ -59,6 +66,8 @@ public class ClickEvent implements Listener
                         player.closeInventory();
                     break;
 
+
+
                     case ENDER_EYE:
                        if(app.getPortalManager().createPortal(player, Bukkit.getWorld("world_the_end").getSpawnLocation()))
                        {
@@ -70,6 +79,8 @@ public class ClickEvent implements Listener
                        }
                        player.closeInventory();
                     break;
+
+
 
                     case BLUE_BANNER:
                         if(app.getTownyData().playerIsTownMember(player) == true)
@@ -88,9 +99,22 @@ public class ClickEvent implements Listener
                     break;
 
 
+
+                    case RED_BANNER:
+                        player.closeInventory();   
+                        if(rpgp.openTownList(player, 0) == false)
+                        {
+                            rpgp.openMainGUI(player);
+                        }    
+                    break;                                        
+
+
+
                     case REDSTONE_BLOCK:
                         player.closeInventory();
                     break;
+
+
 
                     default:
                         player.sendMessage(ChatColor.RED + "Button error.");
@@ -101,6 +125,8 @@ public class ClickEvent implements Listener
         }
 
     }
+
+    
 
 }
 

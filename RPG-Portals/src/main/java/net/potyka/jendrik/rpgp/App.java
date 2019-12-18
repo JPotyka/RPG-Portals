@@ -34,9 +34,12 @@ public final class App extends JavaPlugin{
     @Override
     public void onEnable() {
         getLogger().info("Start RPG-Portals");
+
         this.saveDefaultConfig();
+
         this.getCommand("rpgp").setExecutor(new Rpgp(this));
-        getServer().getPluginManager().registerEvents(new ClickEvent(this), this);
+        
+        getServer().getPluginManager().registerEvents(new ClickEvent(this,this.getCommand("rpgp").getExecutor()), this);
 
         // enable update loop
         if(this.portalmanager.isActive())
