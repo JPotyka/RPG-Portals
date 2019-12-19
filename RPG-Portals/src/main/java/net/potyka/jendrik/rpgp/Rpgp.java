@@ -22,25 +22,25 @@ import net.potyka.jendrik.rpgp.TownyData;
 public class Rpgp implements CommandExecutor
 {
     private App app;
-    private ArrayList<Material> publictownlisticons;
+    private ArrayList<Material> randomicons;
     private Random randomgenerator;
 
     public Rpgp(App app)
     {
         this.app = app;
 
-        publictownlisticons = new ArrayList<>();
-        publictownlisticons.add(Material.GRAY_BANNER);
-        publictownlisticons.add(Material.LIGHT_BLUE_BANNER);
-        publictownlisticons.add(Material.MAGENTA_BANNER);
-        publictownlisticons.add(Material.YELLOW_BANNER);
-        publictownlisticons.add(Material.ORANGE_BANNER);
-        publictownlisticons.add(Material.CYAN_BANNER);
-        publictownlisticons.add(Material.BLACK_BANNER);
-        publictownlisticons.add(Material.GREEN_BANNER);       
-        publictownlisticons.add(Material.PINK_BANNER);
-        publictownlisticons.add(Material.LIME_BANNER);
-        publictownlisticons.add(Material.PURPLE_BANNER);    
+        randomicons = new ArrayList<>();
+        randomicons.add(Material.GRAY_BANNER);
+        randomicons.add(Material.LIGHT_BLUE_BANNER);
+        randomicons.add(Material.MAGENTA_BANNER);
+        randomicons.add(Material.YELLOW_BANNER);
+        randomicons.add(Material.ORANGE_BANNER);
+        randomicons.add(Material.CYAN_BANNER);
+        randomicons.add(Material.BLACK_BANNER);
+        randomicons.add(Material.GREEN_BANNER);       
+        randomicons.add(Material.PINK_BANNER);
+        randomicons.add(Material.LIME_BANNER);
+        randomicons.add(Material.PURPLE_BANNER);    
         
         randomgenerator = new Random();
 
@@ -201,7 +201,7 @@ public class Rpgp implements CommandExecutor
             {
                 if(townnames.size() > i + pagenumber*27)
                 {
-                    item = new ItemStack(publictownlisticons.get(randomgenerator.nextInt(publictownlisticons.size())));
+                    item = new ItemStack(randomicons.get(randomgenerator.nextInt(randomicons.size())));
                     meta = item.getItemMeta();
                     meta.setDisplayName(ChatColor.AQUA + townnames.get(i+pagenumber*27));
                     item.setItemMeta(meta);
@@ -221,4 +221,8 @@ public class Rpgp implements CommandExecutor
         return false;
     }
 
+    public ArrayList<Material> getRandomIcons()
+    {
+        return this.randomicons;
+    }
 }

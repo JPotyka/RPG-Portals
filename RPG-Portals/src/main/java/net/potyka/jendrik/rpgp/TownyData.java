@@ -120,6 +120,23 @@ public class TownyData
         return townspawns;
     }
 
+    public Location getTownSpawn(String townname) 
+    {
+        Location townspawn;
+        try 
+        {
+            townspawn = townyapi.getDataSource().getTown(townname).getSpawn();
+        } 
+        catch (TownyException ex)         
+        {
+            app.getServer().getLogger().info("Something went wrong in the Towny API, this should never happen!" + ex.toString());
+            return null;
+        } 
+        return townspawn;
+    }
+
+
+
 
 
 

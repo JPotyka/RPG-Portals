@@ -33,8 +33,7 @@ public class PortalManager
         return true;
     }
 
-
-	public boolean createPortal(Player player, Location destination)
+    public boolean createPortal(Player player, Location destination)
     {
         Location playerlocation = player.getLocation();
         float playeryaw = playerlocation.getYaw();
