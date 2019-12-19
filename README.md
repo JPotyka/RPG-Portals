@@ -35,4 +35,4 @@ Installation:
 - Place the jar in the plugin folder and start the server.
 
 Spigot Ressource Link:
-- 
+- https://github.com/JPotyka/RPG-Portals
