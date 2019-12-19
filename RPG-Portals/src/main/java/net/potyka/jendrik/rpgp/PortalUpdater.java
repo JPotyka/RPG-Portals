@@ -1,7 +1,5 @@
 package net.potyka.jendrik.rpgp;
 
-
-import org.bukkit.Bukkit;
 import org.bukkit.scheduler.BukkitRunnable;
 
 public class PortalUpdater extends BukkitRunnable

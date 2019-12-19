@@ -10,20 +10,18 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
-import org.bukkit.Material.*;
+
 import org.bukkit.block.BlockState;
 
 
 
 public class PortalManager
 {
-    private App app;
     private ArrayList<Portal> portallist;
     private int nextid;
 
     public PortalManager(App app)
     {
-        this.app = app;
         this.portallist = new ArrayList<>();
         this.nextid = 0;
     }

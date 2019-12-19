@@ -6,19 +6,13 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
-import org.bukkit.block.data.BlockData;
-import org.bukkit.command.CommandException;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.entity.Player;
-import org.bukkit.material.*;
 import org.bukkit.Material;
 
-import com.palmergames.bukkit.towny.object.Town;
-
 import net.potyka.jendrik.rpgp.App;
-import net.potyka.jendrik.rpgp.PortalManager;
 import net.potyka.jendrik.rpgp.Rpgp;
-import net.potyka.jendrik.rpgp.TownyData;
+
 
 
 
