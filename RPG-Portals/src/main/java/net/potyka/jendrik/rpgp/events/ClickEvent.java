@@ -111,7 +111,7 @@ public class ClickEvent implements Listener
                     break;
 
                     case RED_BANNER:
-                        if(player.hasPermission("rpgp.hometown"))
+                        if(player.hasPermission("rpgp.publictown"))
                         {
                             player.closeInventory();   
                             if(rpgp.openTownList(player, 0) == false)
