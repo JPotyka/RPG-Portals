@@ -46,60 +46,89 @@ public class ClickEvent implements Listener
             {          
                 switch(e.getCurrentItem().getType())
                 {
-                    case RED_BED:                    
-                        Location bedspawnlocation = player.getBedSpawnLocation();
-                        if(bedspawnlocation == null)
-                        {    
-                            player.sendMessage(ChatColor.RED+"You have no bed to spawn.");        
-                        }
-                        else
+                    case RED_BED:
+                        if(player.hasPermission("rpgp.bedspawn"))
                         {
-                            if(app.getPortalManager().createPortal(player, bedspawnlocation))
-                            {
-                                player.sendMessage(ChatColor.GREEN+"Portal to your bed spawn location is now für 30 seconds open.");
+                            Location bedspawnlocation = player.getBedSpawnLocation();
+                            if(bedspawnlocation == null)
+                            {    
+                                player.sendMessage(ChatColor.RED+"You have no bed to spawn.");        
                             }
                             else
                             {
-                                player.sendMessage(ChatColor.RED+"Portal could not be created!");
+                                if(app.getPortalManager().createPortal(player, bedspawnlocation))
+                                {
+                                    player.sendMessage(ChatColor.GREEN+"Portal to your bed spawn location is now für 30 seconds open.");
+                                }
+                                else
+                                {
+                                    player.sendMessage(ChatColor.RED+"Portal could not be created!");
+                                }
                             }
                         }
+                        else
+                        {
+                            player.sendMessage("You don't have the permission to create a portal to your home.");
+                        }                        
                         player.closeInventory();
                     break;
 
                     case ENDER_EYE:
-                       if(app.getPortalManager().createPortal(player, Bukkit.getWorld("world_the_end").getSpawnLocation()))
-                       {
-                           player.sendMessage(ChatColor.GREEN+"Portal to the end is now für 30 seconds open.");
-                       }
-                       else
-                       {
-                           player.sendMessage(ChatColor.RED+"Portal could not be created!");
-                       }
-                       player.closeInventory();
-                    break;        
-
-                    case BLUE_BANNER:
-                        if(app.getTownyData().playerIsTownMember(player) == true)
+                        if(player.hasPermission("rpgp.end"))
                         {
-
-                            if(app.getPortalManager().createPortal(player, app.getTownyData().playersTownSpawn(player)))
+                            if(app.getPortalManager().createPortal(player, Bukkit.getWorld("world_the_end").getSpawnLocation()))
                             {
-                                player.sendMessage(ChatColor.GREEN+"Portal to " + app.getTownyData().playersTownName(player)+ " is open für 30 seconds open.");
+                                player.sendMessage(ChatColor.GREEN+"Portal to the end is now für 30 seconds open.");
                             }
                             else
                             {
                                 player.sendMessage(ChatColor.RED+"Portal could not be created!");
                             }
+
+                        }
+                        else
+                        {
+                            player.sendMessage("You don't have the permission to create a portal to the end.");
+                        }
+                        player.closeInventory();
+                    break;        
+
+                    case BLUE_BANNER:
+                        if(player.hasPermission("rpgp.hometown"))
+                        {
+                            if(app.getTownyData().playerIsTownMember(player) == true)
+                            {
+
+                                if(app.getPortalManager().createPortal(player, app.getTownyData().playersTownSpawn(player)))
+                                {
+                                    player.sendMessage(ChatColor.GREEN+"Portal to " + app.getTownyData().playersTownName(player)+ " is open für 30 seconds open.");
+                                }
+                                else
+                                {
+                                    player.sendMessage(ChatColor.RED+"Portal could not be created!");
+                                }
+                            }
+                        }
+                        else
+                        {
+                            player.sendMessage("You don't have the permission to create a portal to your home town.");                            
                         }
                         player.closeInventory();
                     break;
 
                     case RED_BANNER:
-                        player.closeInventory();   
-                        if(rpgp.openTownList(player, 0) == false)
+                        if(player.hasPermission("rpgp.hometown"))
                         {
-                            rpgp.openMainGUI(player);
-                        }    
+                            player.closeInventory();   
+                            if(rpgp.openTownList(player, 0) == false)
+                            {
+                                rpgp.openMainGUI(player);
+                            }    
+                        }
+                        else
+                        {
+                            player.sendMessage("You don't have the permission to create a portal to a public town.");                            
+                        }
                     break;                                        
 
                     case REDSTONE_BLOCK:

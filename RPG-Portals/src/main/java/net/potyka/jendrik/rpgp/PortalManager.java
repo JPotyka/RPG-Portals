@@ -169,17 +169,20 @@ public class PortalManager
             {
                 for(int n = 0; n < players.size(); n++)
                 {
-                    Location blocklocation;
-                    for(int m =0; m < this.portallist.get(i).getPortalBlockPositions().size(); m++)
-                    {
-                        blocklocation = this.portallist.get(i).getPortalBlockPositions().get(m);
-                        int px =  players.get(n).getLocation().getBlockX();
-                        int py =  players.get(n).getLocation().getBlockY();
-                        int pz =  players.get(n).getLocation().getBlockZ();  
-
-                        if(blocklocation.getBlockX() == px && blocklocation.getBlockY() == py && blocklocation.getBlockZ() == pz)
+                    if(players.get(i).hasPermission("rpgp.portal"))
+                    {                    
+                        Location blocklocation;
+                        for(int m =0; m < this.portallist.get(i).getPortalBlockPositions().size(); m++)
                         {
-                            players.get(n).teleport(this.portallist.get(i).getDestination());
+                            blocklocation = this.portallist.get(i).getPortalBlockPositions().get(m);
+                            int px =  players.get(n).getLocation().getBlockX();
+                            int py =  players.get(n).getLocation().getBlockY();
+                            int pz =  players.get(n).getLocation().getBlockZ();  
+
+                            if(blocklocation.getBlockX() == px && blocklocation.getBlockY() == py && blocklocation.getBlockZ() == pz)
+                            {
+                                players.get(n).teleport(this.portallist.get(i).getDestination());
+                            }
                         }
                     }
                 }
