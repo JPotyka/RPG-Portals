@@ -12,9 +12,6 @@ import net.potyka.jendrik.rpgp.PortalUpdater;
 import net.potyka.jendrik.rpgp.TownyData;
 
 
-/**
- * Hello world!
- */
 public final class App extends JavaPlugin{
 
     private PortalManager portalmanager;
@@ -23,6 +20,8 @@ public final class App extends JavaPlugin{
 
     private boolean usetowny = false;
     private TownyData townydata = null;
+
+    
 
 
     public App()
