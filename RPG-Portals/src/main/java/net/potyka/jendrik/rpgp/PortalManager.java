@@ -1,34 +1,35 @@
 package net.potyka.jendrik.rpgp;
-
 import net.potyka.jendrik.rpgp.App;
-import net.potyka.jendrik.rpgp.Portal;
 
 import java.util.ArrayList;
-import java.lang.Math; 
 
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.entity.Player;
-
 import org.bukkit.block.BlockState;
+import org.bukkit.Material;
+import org.bukkit.Bukkit;
 
 
 
 public class PortalManager
 {
+    private App app;
     private ArrayList<Portal> portallist;
     private int nextid;
 
+    // portal status times
+    private long activetime;
+    private long deadtime;
+    private long toremove;
+
     public PortalManager(App app)
     {
+        this.app = app;
         this.portallist = new ArrayList<>();
         this.nextid = 0;
-    }
 
-    public boolean isActive()
-    {
-        return true;
+        this.activetime = 30000;
+        this.toremove = 0;
     }
 
     public boolean createPortal(Player player, Location destination)
@@ -38,35 +39,27 @@ public class PortalManager
 
         ArrayList<Location> portalblockpositions = createPortalBlockPosition(Math.abs(playeryaw),playerlocation);
 
-
-        player.sendMessage(String.valueOf(playeryaw));
-
-        if(portalblockpositions.size() != 0)
+        if(portalblockpositions != null)
         {
-
-            ArrayList<BlockState> originalblockmaterial = new ArrayList<>();
-
-            for(int i =0; i < portalblockpositions.size();i++)
-            {
-                // remove: Bukkit.getServer().getLogger().info(String.valueOf(i));
-                originalblockmaterial.add(portalblockpositions.get(i).getBlock().getState());
-            }
-
-            for (int i = 0; i < portalblockpositions.size(); i++) 
-            {
-                portalblockpositions.get(i).getBlock().setType(Material.END_GATEWAY);
-            }
-
-            this.portallist.add(new Portal(this.nextid, portalblockpositions, originalblockmaterial, destination, System.currentTimeMillis(), player));
+            this.portallist.add(new Portal(this.nextid, portalblockpositions, destination, System.currentTimeMillis(), player));
             this.nextid = this.nextid + 1;
-
             return true;
         }
 
         return false;
-    } 
+    }
 
-    ArrayList<Location> createPortalBlockPosition(float rotation, Location playerlocation)
+    public void update()
+    {
+        // teleport
+        teleportEntitys();
+
+        // update portals
+        updatePortals();
+
+    }
+
+    private ArrayList<Location> createPortalBlockPosition(float rotation, Location playerlocation)
     {
         ArrayList<Location> portalblockpositions = new ArrayList<>();
 
@@ -134,32 +127,12 @@ public class PortalManager
             return portalblockpositions;  
         }
 
-        //empty ArrayList => no portal creation
-        return portalblockpositions;
+        return null;
     }
 
-    // call this function only as BukkitTask
-    public void update()
+    private void teleportEntitys()
     {
-        //remove old portals and teleport players thru portals
-        for(int i = this.portallist.size() - 1 ; i > -1; i--)
-        {
-            if((System.currentTimeMillis() - this.portallist.get(i).getCreationTime()) > 30000)
-            {
-                //reset portalblocks
-                for(int n = 0; n < this.portallist.get(i).getOriginalBlockMaterial().size(); n++)
-                {            
-                    this.portallist.get(i).getOriginalBlockMaterial().get(n).update(true);
-                }
-
-                //fance message to portal owner
-                this.portallist.get(i).getOwner().sendMessage("Your portal is now closed.");
-                
-                //remove the portal from stack
-                this.portallist.remove(i);
-            }
-        }
-
+        // currently only players
         if(this.portallist.size() > 0 || Bukkit.getOnlinePlayers().size() > 0)
         {
             ArrayList<Player> players = new ArrayList<>(Bukkit.getOnlinePlayers());
@@ -174,7 +147,7 @@ public class PortalManager
                         {
                             blocklocation = this.portallist.get(i).getPortalBlockPositions().get(m);
                             int px =  players.get(n).getLocation().getBlockX();
-                            int py =  players.get(n).getLocation().getBlockY();
+                            int py =  players.get(n).getLocation().getBlockY() + 1;
                             int pz =  players.get(n).getLocation().getBlockZ();  
 
                             if(blocklocation.getBlockX() == px && blocklocation.getBlockY() == py && blocklocation.getBlockZ() == pz)
@@ -186,6 +159,75 @@ public class PortalManager
                 }
             }
         }  
+    }   
+
+    private void updatePortals()
+    {
+        for(int i = this.portallist.size() - 1 ; i > -1; i--)
+        {
+            Portal.PortalStatus portalstatus = this.portallist.get(i).getPortalStatus(); 
+            
+            switch (portalstatus)
+            {
+                case Created:
+                    this.portallist.get(i).setPortalStatus(Portal.PortalStatus.Active);
+                    placePortalBlocks(i);
+                    this.portallist.get(i).setUpdateTime(System.currentTimeMillis());
+                break;
+                
+                case Active:
+                    if((System.currentTimeMillis() - this.portallist.get(i).getLastUpdateTime()) > this.activetime)
+                    {
+                        this.portallist.get(i).setPortalStatus(Portal.PortalStatus.ToRemove);
+                        replacePortalBlocks(i);
+                        this.portallist.get(i).setUpdateTime(System.currentTimeMillis());
+
+                        //fance message to portal owner
+                        this.portallist.get(i).getOwner().sendMessage("Your portal is now closed.");
+                    }
+                break;
+
+                case ToRemove:
+                    this.portallist.remove(i);                   
+                break;
+
+                default:
+
+                break;
+            }
+
+        }
     }
+
+    private boolean placePortalBlocks(int n)
+    {
+
+        ArrayList<BlockState> originalblockmaterial = new ArrayList<>();
+
+        for(int i =0; i < this.portallist.get(n).getPortalBlockPositions().size();i++)
+        {
+            originalblockmaterial.add(this.portallist.get(n).getPortalBlockPositions().get(i).getBlock().getState());
+        }
+
+        for (int i = 0; i < this.portallist.get(n).getPortalBlockPositions().size(); i++) 
+        {
+            this.portallist.get(n).getPortalBlockPositions().get(i).getBlock().setType(Material.END_GATEWAY);
+        }
+
+        return true;
+    }
+
+
+    private boolean replacePortalBlocks(int i)
+    {
+        //reset portalblocks
+        for(int n = 0; n < this.portallist.get(i).getOriginalBlockMaterial().size(); n++)
+        {            
+            this.portallist.get(i).getOriginalBlockMaterial().get(n).update(true);
+        }
+        
+        return true;   
+    }
+
 
 }

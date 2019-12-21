@@ -1,42 +1,44 @@
 package net.potyka.jendrik.rpgp.events;
+import net.potyka.jendrik.rpgp.App;
 
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Location;
 import org.bukkit.command.CommandExecutor;
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
+import org.bukkit.ChatColor;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
-
-import net.potyka.jendrik.rpgp.App;
-import net.potyka.jendrik.rpgp.Rpgp;
-
-
-
 
 
 public class ClickEvent implements Listener
 {
-
     private App app;
-    private Rpgp rpgp;
 
     public ClickEvent(App app, CommandExecutor commandexecutor)
     {
         this.app = app;
-        this.rpgp = (Rpgp)commandexecutor;
     }
 
     @EventHandler
     public void clickEvent(InventoryClickEvent e)
     {
-        Player player = (Player) e.getWhoClicked();
-
         if(e.getView().getTitle().equalsIgnoreCase(ChatColor.DARK_AQUA+"RPG-Portals: Main menu"))
         {    
-            if(e.getCurrentItem()!=null)
+            clicksMainGUI(e);
+        }
+        else if(e.getView().getTitle().equalsIgnoreCase(ChatColor.DARK_AQUA+"RPG-Portals: Public towns"))
+        {
+            clicksPublicTowns(e);            
+        }
+    }
+
+    private void clicksMainGUI(InventoryClickEvent e)
+    {
+        Player player = (Player) e.getWhoClicked();
+
+        if(e.getCurrentItem()!=null)
             {          
                 switch(e.getCurrentItem().getType())
                 {
@@ -50,7 +52,7 @@ public class ClickEvent implements Listener
                             }
                             else
                             {
-                                if(app.getPortalManager().createPortal(player, bedspawnlocation))
+                                if(app.getPM().createPortal(player, bedspawnlocation))
                                 {
                                     player.sendMessage(ChatColor.GREEN+"Portal to your bed spawn location is now für 30 seconds open.");
                                 }
@@ -63,14 +65,15 @@ public class ClickEvent implements Listener
                         else
                         {
                             player.sendMessage("You don't have the permission to create a portal to your home.");
-                        }                        
+                        }     
+                        e.setCancelled(true);                      
                         player.closeInventory();
                     break;
 
                     case ENDER_EYE:
                         if(player.hasPermission("rpgp.end"))
                         {
-                            if(app.getPortalManager().createPortal(player, Bukkit.getWorld("world_the_end").getSpawnLocation()))
+                            if(app.getPM().createPortal(player, Bukkit.getWorld("world_the_end").getSpawnLocation()))
                             {
                                 player.sendMessage(ChatColor.GREEN+"Portal to the end is now für 30 seconds open.");
                             }
@@ -84,18 +87,19 @@ public class ClickEvent implements Listener
                         {
                             player.sendMessage("You don't have the permission to create a portal to the end.");
                         }
+                        e.setCancelled(true);   
                         player.closeInventory();
                     break;        
 
                     case BLUE_BANNER:
                         if(player.hasPermission("rpgp.hometown"))
                         {
-                            if(app.getTownyData().playerIsTownMember(player) == true)
+                            if(app.getTW().playerIsTownMember(player) == true)
                             {
 
-                                if(app.getPortalManager().createPortal(player, app.getTownyData().playersTownSpawn(player)))
+                                if(app.getPM().createPortal(player, app.getTW().playersTownSpawn(player)))
                                 {
-                                    player.sendMessage(ChatColor.GREEN+"Portal to " + app.getTownyData().playersTownName(player)+ " is open für 30 seconds open.");
+                                    player.sendMessage(ChatColor.GREEN+"Portal to " + app.getTW().playersTownName(player)+ " is open für 30 seconds open.");
                                 }
                                 else
                                 {
@@ -113,10 +117,11 @@ public class ClickEvent implements Listener
                     case RED_BANNER:
                         if(player.hasPermission("rpgp.publictown"))
                         {
+                            e.setCancelled(true);   
                             player.closeInventory();   
-                            if(rpgp.openTownList(player, 0) == false)
+                            if(app.getIM().openPublicTowns(this.app, player, 0) == false)
                             {
-                                rpgp.openMainGUI(player);
+                               app.getIM().openMainGUI(this.app, player);
                             }    
                         }
                         else
@@ -135,60 +140,62 @@ public class ClickEvent implements Listener
                 }
                 e.setCancelled(true);        
             }
-        }
 
-
-        if(e.getView().getTitle().equalsIgnoreCase(ChatColor.DARK_AQUA+"RPG-Portals: Public towns"))
-        {    
-            if(e.getCurrentItem()!=null)
-            {          
-                switch(e.getCurrentItem().getType())
-                {
-                    case REDSTONE_BLOCK:
-                        player.closeInventory();
-                        rpgp.openMainGUI(player);
-                    break;
-
-                    default: 
-                        Material material = e.getCurrentItem().getType();    
-                        boolean israndomicon = false;  
-
-                        for (int i = 0; i < rpgp.getRandomIcons().size(); i++) 
-                        {
-                            if(material == rpgp.getRandomIcons().get(i))    
-                            {
-                                israndomicon = true;
-                                break;
-                            }
-                        }
-                        if(israndomicon)
-                        {
-                            String townname = ChatColor.stripColor(e.getCurrentItem().getItemMeta().getDisplayName());
-                            Location location = app.getTownyData().getTownSpawn(townname);
-
-                            if(app.getPortalManager().createPortal(player,location))
-                            {
-                                player.sendMessage(ChatColor.GREEN+"Portal to " + townname + " is open für 30 seconds open.");
-                            }
-                            else
-                            {
-                                player.sendMessage(ChatColor.RED+"Portal could not be created!");
-                            }
-                            player.closeInventory();
-                        }
-                        else
-                        {
-                            player.sendMessage(ChatColor.RED + "Button error.");
-                        }
-                    break;
-                }
-                e.setCancelled(true);        
-            }
-        }
 
     }
 
-    
+    private void clicksPublicTowns(InventoryClickEvent e)
+    {
+        Player player = (Player) e.getWhoClicked();
+
+        if(e.getCurrentItem()!=null)
+        {          
+            switch(e.getCurrentItem().getType())
+            {
+                case REDSTONE_BLOCK:
+                    player.closeInventory();
+                    app.getIM().openMainGUI(player);
+                break;
+
+                default: 
+                    Material material = e.getCurrentItem().getType();    
+                    boolean israndomicon = false;  
+
+                    for (int i = 0; i < this.app.getIM().getRandomIcons().size(); i++) 
+                    {
+                        if(material == this.app.getIM().getRandomIcons().get(i))    
+                        {
+                            israndomicon = true;
+                            break;
+                        }
+                    }
+                    if(israndomicon)
+                    {
+                        String townname = ChatColor.stripColor(e.getCurrentItem().getItemMeta().getDisplayName());
+                        Location location = app.getTW().getTownSpawn(townname);
+
+                        if(app.getPM().createPortal(player,location))
+                        {
+                            player.sendMessage(ChatColor.GREEN+"Portal to " + townname + " is open für 30 seconds open.");
+                        }
+                        else
+                        {
+                            player.sendMessage(ChatColor.RED+"Portal could not be created!");
+                        }
+                        player.closeInventory();
+                    }
+                    else
+                    {
+                        player.sendMessage(ChatColor.RED + "Button error.");
+                    }
+                break;
+            }
+            e.setCancelled(true);        
+        }
+    }
 
 }
+
+
+
 
