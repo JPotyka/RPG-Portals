@@ -119,9 +119,9 @@ public class ClickEvent implements Listener
                         {
                             e.setCancelled(true);   
                             player.closeInventory();   
-                            if(app.getIM().openPublicTowns(this.app, player, 0) == false)
+                            if(app.getIM().openPublicTowns(player, 0) == false)
                             {
-                               app.getIM().openMainGUI(this.app, player);
+                               app.getIM().openMainGUI(player);
                             }    
                         }
                         else

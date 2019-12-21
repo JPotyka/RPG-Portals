@@ -37,7 +37,7 @@ public class Rpgp implements CommandExecutor
             if(sender.hasPermission("rpgp.opengui"))
             {     
                 Player player = (Player) sender;
-                app.getIM().openMainGUI(this.app, player);
+                app.getIM().openMainGUI(player);
                 return true;
             }
 

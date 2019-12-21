@@ -1,5 +1,6 @@
 package net.potyka.jendrik.rpgp;
 import net.potyka.jendrik.rpgp.App;
+import net.potyka.jendrik.rpgp.Portal.PortalStatus;
 
 import java.util.ArrayList;
 
@@ -20,7 +21,6 @@ public class PortalManager
     // portal status times
     private long activetime;
     private long deadtime;
-    private long toremove;
 
     public PortalManager(App app)
     {
@@ -29,7 +29,7 @@ public class PortalManager
         this.nextid = 0;
 
         this.activetime = 30000;
-        this.toremove = 0;
+        this.deadtime = 0;
     }
 
     public boolean createPortal(Player player, Location destination)
@@ -138,21 +138,24 @@ public class PortalManager
             ArrayList<Player> players = new ArrayList<>(Bukkit.getOnlinePlayers());
             for(int i = 0; i < this.portallist.size(); i++)
             {
-                for(int n = 0; n < players.size(); n++)
+                if(this.portallist.get(i).getPortalStatus() == PortalStatus.Active)
                 {
-                    if(players.get(i).hasPermission("rpgp.portal"))
-                    {                    
-                        Location blocklocation;
-                        for(int m =0; m < this.portallist.get(i).getPortalBlockPositions().size(); m++)
-                        {
-                            blocklocation = this.portallist.get(i).getPortalBlockPositions().get(m);
-                            int px =  players.get(n).getLocation().getBlockX();
-                            int py =  players.get(n).getLocation().getBlockY() + 1;
-                            int pz =  players.get(n).getLocation().getBlockZ();  
-
-                            if(blocklocation.getBlockX() == px && blocklocation.getBlockY() == py && blocklocation.getBlockZ() == pz)
+                    for(int n = 0; n < players.size(); n++)
+                    {
+                        if(players.get(i).hasPermission("rpgp.portal"))
+                        {                    
+                            Location blocklocation;
+                            for(int m =0; m < this.portallist.get(i).getPortalBlockPositions().size(); m++)
                             {
-                                players.get(n).teleport(this.portallist.get(i).getDestination());
+                                blocklocation = this.portallist.get(i).getPortalBlockPositions().get(m);
+                                int px =  players.get(n).getLocation().getBlockX();
+                                int py =  players.get(n).getLocation().getBlockY() + 1;
+                                int pz =  players.get(n).getLocation().getBlockZ();  
+
+                                if(blocklocation.getBlockX() == px && blocklocation.getBlockY() == py && blocklocation.getBlockZ() == pz)
+                                {
+                                    players.get(n).teleport(this.portallist.get(i).getDestination());
+                                }
                             }
                         }
                     }
@@ -165,12 +168,12 @@ public class PortalManager
     {
         for(int i = this.portallist.size() - 1 ; i > -1; i--)
         {
-            Portal.PortalStatus portalstatus = this.portallist.get(i).getPortalStatus(); 
+            PortalStatus portalstatus = this.portallist.get(i).getPortalStatus(); 
             
             switch (portalstatus)
             {
                 case Created:
-                    this.portallist.get(i).setPortalStatus(Portal.PortalStatus.Active);
+                    this.portallist.get(i).setPortalStatus(PortalStatus.Active);
                     placePortalBlocks(i);
                     this.portallist.get(i).setUpdateTime(System.currentTimeMillis());
                 break;
@@ -178,7 +181,7 @@ public class PortalManager
                 case Active:
                     if((System.currentTimeMillis() - this.portallist.get(i).getLastUpdateTime()) > this.activetime)
                     {
-                        this.portallist.get(i).setPortalStatus(Portal.PortalStatus.ToRemove);
+                        this.portallist.get(i).setPortalStatus(PortalStatus.ToRemove);
                         replacePortalBlocks(i);
                         this.portallist.get(i).setUpdateTime(System.currentTimeMillis());
 
@@ -217,10 +220,9 @@ public class PortalManager
         return true;
     }
 
-
     private boolean replacePortalBlocks(int i)
     {
-        //reset portalblocks
+        //reset portalblocks to previous block state
         for(int n = 0; n < this.portallist.get(i).getOriginalBlockMaterial().size(); n++)
         {            
             this.portallist.get(i).getOriginalBlockMaterial().get(n).update(true);
