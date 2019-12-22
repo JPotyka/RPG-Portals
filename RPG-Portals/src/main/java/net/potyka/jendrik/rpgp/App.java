@@ -8,9 +8,11 @@ import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.configuration.InvalidConfigurationException;
 
-
-
+import java.io.*;
 
 
 public final class App extends JavaPlugin
@@ -25,6 +27,9 @@ public final class App extends JavaPlugin
 
     private InvManager invmanager;
 
+    private File customConfigFile;
+    public FileConfiguration customConfig;
+
 
     public App()
     {
@@ -38,6 +43,22 @@ public final class App extends JavaPlugin
 
         // config file
         this.saveDefaultConfig();
+        this.customConfigFile = new File(getDataFolder(), "config.yml");
+        this.customConfig= new YamlConfiguration();
+        try
+        {
+            customConfig.load(customConfigFile);
+        }
+        catch (IOException | InvalidConfigurationException e) 
+        {
+            e.printStackTrace();
+        }
+
+        // load custom configs
+        long activetime = (long)this.customConfig.getInt("PortalStatusTimes.Active");
+        this.portalmanager.setPortalStatusTimes(activetime);
+        getLogger().info(String.valueOf(activetime));
+
 
         // register stuff
         this.getCommand("rpgp").setExecutor(new Rpgp(this));
@@ -77,7 +98,6 @@ public final class App extends JavaPlugin
     }
 
 
-
     // external plugins
 
     public boolean getUseTonwy()
@@ -89,6 +109,7 @@ public final class App extends JavaPlugin
     {
         return this.townywrapper;
     }
+
 }
 
 

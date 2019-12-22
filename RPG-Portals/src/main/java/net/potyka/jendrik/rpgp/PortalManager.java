@@ -20,7 +20,7 @@ public class PortalManager
 
     // portal status times
     private long activetime;
-    private long deadtime;
+    //private long deadtime;
 
     public PortalManager(App app)
     {
@@ -29,7 +29,17 @@ public class PortalManager
         this.nextid = 0;
 
         this.activetime = 30000;
-        this.deadtime = 0;
+        //this.deadtime = 5000;
+    }
+
+    public void setPortalStatusTimes(long activetime)
+    {
+        this.activetime = activetime;
+    }
+
+    public long getPortalActivTime()
+    {
+        return this.activetime;
     }
 
     public boolean createPortal(Player player, Location destination)
