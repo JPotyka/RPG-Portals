@@ -31,7 +31,7 @@ public class Portal
         this.lastupdatetime = creationtime;
         this.owner = player;
 
-        this.portalstatus = PortalStatus.Active;
+        this.portalstatus = PortalStatus.Created;
     }
 
     public int getID()
@@ -48,6 +48,11 @@ public class Portal
     {
         return this.originalblockmaterial;
     }   
+
+    public void setOriginalBlockMaterial(ArrayList<BlockState> originalblockmaterial)
+    {
+        this.originalblockmaterial = originalblockmaterial;
+    }
 
     public Location getDestination()
     {

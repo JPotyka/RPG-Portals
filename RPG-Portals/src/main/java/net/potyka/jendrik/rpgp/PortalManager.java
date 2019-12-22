@@ -142,7 +142,7 @@ public class PortalManager
                 {
                     for(int n = 0; n < players.size(); n++)
                     {
-                        if(players.get(i).hasPermission("rpgp.portal"))
+                        if(players.get(n).hasPermission("rpgp.portal"))
                         {                    
                             Location blocklocation;
                             for(int m =0; m < this.portallist.get(i).getPortalBlockPositions().size(); m++)
@@ -211,6 +211,8 @@ public class PortalManager
         {
             originalblockmaterial.add(this.portallist.get(n).getPortalBlockPositions().get(i).getBlock().getState());
         }
+
+        this.portallist.get(n).setOriginalBlockMaterial(originalblockmaterial);
 
         for (int i = 0; i < this.portallist.get(n).getPortalBlockPositions().size(); i++) 
         {
