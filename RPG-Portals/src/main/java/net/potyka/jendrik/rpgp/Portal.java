@@ -9,16 +9,23 @@ import org.bukkit.entity.Player;
 
 public class Portal 
 {
+    // portal
     private int id;
     private ArrayList<Location> portalblockpositions;
     private Location destination;
     private long lastupdatetime;
     private ArrayList<BlockState> originalblockmaterial;
+
+    // player
     private Player owner;
+    private Location castinglcocation;
+
+
+    
 
     public enum PortalStatus
     {
-        Created,Active,Dead,ToRemove
+        Created,Cast,Active,ToRemove
     }
 
     private PortalStatus portalstatus;
@@ -30,6 +37,7 @@ public class Portal
         this.destination = destination;
         this.lastupdatetime = creationtime;
         this.owner = player;
+        this.castinglcocation = player.getLocation();
 
         this.portalstatus = PortalStatus.Created;
     }
@@ -72,6 +80,11 @@ public class Portal
     public Player getOwner()
     {
         return this.owner;
+    }
+
+    public Location getCastingLocation()
+    {
+        return this.castinglcocation;
     }
 
     public PortalStatus getPortalStatus()

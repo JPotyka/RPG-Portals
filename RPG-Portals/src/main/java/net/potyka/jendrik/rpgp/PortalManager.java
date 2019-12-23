@@ -8,7 +8,16 @@ import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.block.BlockState;
 import org.bukkit.Material;
+import org.bukkit.Particle;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.World;
+
+import net.md_5.bungee.api.ChatMessageType;
+import net.md_5.bungee.api.chat.TextComponent;
+
+
+
 
 
 
@@ -20,7 +29,15 @@ public class PortalManager
 
     // portal status times
     private long activetime;
-    //private long deadtime;
+    private long casttime;
+
+    // animation settings
+    private int maxanimationparticles;
+    private double numberrotations; // number of the rotations around the player in one cast time
+    private double timeforrotation; // the time a particle have for one rotation 
+    private ArrayList<Double> angleoffset;
+    private double maxradius; // max radius for the particles from the player
+
 
     public PortalManager(App app)
     {
@@ -29,12 +46,22 @@ public class PortalManager
         this.nextid = 0;
 
         this.activetime = 30000;
-        //this.deadtime = 5000;
+        this.casttime = 5000;
+        this.maxanimationparticles = 6;
+        this.numberrotations = 2;
+        this.maxradius = 3;
+        this.angleoffset = new ArrayList<>();
+
+        updateParticlePositions();
+
     }
 
-    public void setPortalStatusTimes(long activetime)
+    public void setPortalStatusTimes(long activetime, long casttime)
     {
         this.activetime = activetime;
+        this.casttime = casttime;
+
+        updateParticlePositions();
     }
 
     public long getPortalActivTime()
@@ -183,9 +210,32 @@ public class PortalManager
             switch (portalstatus)
             {
                 case Created:
-                    this.portallist.get(i).setPortalStatus(PortalStatus.Active);
-                    placePortalBlocks(i);
-                    this.portallist.get(i).setUpdateTime(System.currentTimeMillis());
+                    this.portallist.get(i).setPortalStatus(PortalStatus.Cast);
+                break;
+
+                case Cast:
+                    if((System.currentTimeMillis()-this.portallist.get(i).getLastUpdateTime())>this.casttime)
+                    {
+                        this.portallist.get(i).getOwner().spigot().sendMessage(ChatMessageType.ACTION_BAR,TextComponent.fromLegacyText("Portal incantation: "+ChatColor.GOLD+"100%"));
+                        this.portallist.get(i).setPortalStatus(PortalStatus.Active);
+                        placePortalBlocks(i);
+                        this.portallist.get(i).setUpdateTime(System.currentTimeMillis());
+                    }
+                    else
+                    {
+                        if(this.portallist.get(i).getCastingLocation().getBlockX() == this.portallist.get(i).getOwner().getLocation().getBlockX() &&
+                        this.portallist.get(i).getCastingLocation().getBlockY() == this.portallist.get(i).getOwner().getLocation().getBlockY() && 
+                        this.portallist.get(i).getCastingLocation().getBlockZ() == this.portallist.get(i).getOwner().getLocation().getBlockZ())
+                        {
+                            castAnimation(i);
+                        }
+                        else
+                        {
+                            this.portallist.get(i).getOwner().spigot().sendMessage(ChatMessageType.ACTION_BAR,TextComponent.fromLegacyText("Protal incantation aborted, you must stand still to concentrate!"));
+                            this.portallist.get(i).setPortalStatus(PortalStatus.ToRemove);
+                            this.portallist.get(i).setUpdateTime(System.currentTimeMillis());
+                        }
+                    }
                 break;
                 
                 case Active:
@@ -212,7 +262,40 @@ public class PortalManager
         }
     }
 
-    private boolean placePortalBlocks(int n)
+    // Cast portal
+    private boolean castAnimation(int i) // i portallist index
+    {
+        int time = (int)System.currentTimeMillis()-(int)this.portallist.get(i).getLastUpdateTime();
+        double percentage = 100*time/(int)this.casttime;
+        this.portallist.get(i).getOwner().spigot().sendMessage(ChatMessageType.ACTION_BAR,TextComponent.fromLegacyText("Portal casting: "+ChatColor.GOLD+String.valueOf((int)percentage)+"%"));
+
+        World world = this.portallist.get(i).getOwner().getWorld();
+
+        for(int np = 0; np < this.angleoffset.size(); np++)
+        {
+           double r = this.maxradius * percentage/100;
+           double x = r*Math.cos(2*Math.PI*time/this.timeforrotation+this.angleoffset.get(np)) + this.portallist.get(i).getCastingLocation().getBlockX() + 0.5;
+           double z = r*Math.sin(2*Math.PI*time/this.timeforrotation+this.angleoffset.get(np)) + this.portallist.get(i).getCastingLocation().getBlockZ() + 0.5;
+           double y = 1 + this.portallist.get(i).getCastingLocation().getBlockY();
+           world.spawnParticle(Particle.DRAGON_BREATH, x, y, z, 1);
+        }
+        return true;
+    }
+
+    private void updateParticlePositions()
+    {
+        this.angleoffset.clear();
+        this.timeforrotation = this.casttime/this.numberrotations;
+        double stepsize = 2*Math.PI/this.maxanimationparticles;
+        for (int i = 0; i < this.maxanimationparticles; i++) 
+        {
+            this.angleoffset.add(stepsize*i);
+        }
+    }
+
+
+    // Active portal
+    private boolean placePortalBlocks(int n) // n portallist index
     {
 
         ArrayList<BlockState> originalblockmaterial = new ArrayList<>();
@@ -232,7 +315,8 @@ public class PortalManager
         return true;
     }
 
-    private boolean replacePortalBlocks(int i)
+    // ToRemove portal
+    private boolean replacePortalBlocks(int i) // i portallist
     {
         //reset portalblocks to previous block state
         for(int n = 0; n < this.portallist.get(i).getOriginalBlockMaterial().size(); n++)

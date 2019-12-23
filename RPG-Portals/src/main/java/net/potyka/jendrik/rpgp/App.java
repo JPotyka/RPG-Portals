@@ -56,7 +56,8 @@ public final class App extends JavaPlugin
 
         // load custom configs
         long activetime = (long)this.customConfig.getInt("PortalStatusTimes.Active");
-        this.portalmanager.setPortalStatusTimes(activetime);
+        long casttime = (long)this.customConfig.getInt("PortalStatusTimes.Cast");
+        this.portalmanager.setPortalStatusTimes(activetime,casttime);
         getLogger().info(String.valueOf(activetime));
 
 
@@ -79,7 +80,7 @@ public final class App extends JavaPlugin
 
         // start the update loop and save the task 
         this.runportalupdater = new PortalUpdater(this);
-        this.taskportalupdater = this.runportalupdater.runTaskTimer(this, 0, 5);
+        this.taskportalupdater = this.runportalupdater.runTaskTimer(this, 0, 3);
     }
 
     @Override
