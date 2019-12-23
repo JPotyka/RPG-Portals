@@ -12,12 +12,12 @@ import com.palmergames.bukkit.towny.exceptions.TownyException;
 
 import net.potyka.jendrik.rpgp.App;
 
-public class TownyData
+public class TownyWrapper
 {
     private TownyAPI townyapi;
     private App app;
 
-    public TownyData(App app)
+    public TownyWrapper(App app)
     {
         this.townyapi = TownyAPI.getInstance();
         this.app = app;

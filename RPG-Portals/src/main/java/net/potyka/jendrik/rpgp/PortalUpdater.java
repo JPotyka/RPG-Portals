@@ -14,6 +14,6 @@ public class PortalUpdater extends BukkitRunnable
     @Override
     public void run()
     {
-        this.app.getPortalManager().update();
+        app.getPM().update();
     }
 }
