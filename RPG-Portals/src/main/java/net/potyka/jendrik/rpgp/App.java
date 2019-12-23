@@ -28,7 +28,9 @@ public final class App extends JavaPlugin
     private InvManager invmanager;
 
     private File customConfigFile;
-    public FileConfiguration customConfig;
+    private FileConfiguration customConfig;
+
+    private String netherworldname;
 
 
     public App()
@@ -44,7 +46,7 @@ public final class App extends JavaPlugin
         // config file
         this.saveDefaultConfig();
         this.customConfigFile = new File(getDataFolder(), "config.yml");
-        this.customConfig= new YamlConfiguration();
+        this.customConfig = new YamlConfiguration();
         try
         {
             customConfig.load(customConfigFile);
@@ -54,15 +56,18 @@ public final class App extends JavaPlugin
             e.printStackTrace();
         }
 
-        // load custom configs for the portal manager
-        long activetime = (long)this.customConfig.getInt("PortalStatusTimes.Active");
+        // load custom configs 
         long casttime = (long)this.customConfig.getInt("PortalStatusTimes.Cast");
+        long activationtime = (long)this.customConfig.getInt("PortalStatusTimes.Activation");
+        long activetime = (long)this.customConfig.getInt("PortalStatusTimes.Active");
+
         int maxnumberofparticles = this.customConfig.getInt("PortalCastAnimation.MaxNumberOfParticles");
         int numberofrotations = this.customConfig.getInt("PortalCastAnimation.NumberOfRotations");
         int maxradius = this.customConfig.getInt("PortalCastAnimation.MaxRadius");
         double particlespeed = this.customConfig.getDouble("PortalCastAnimation.ParticleSpeed");
-        this.portalmanager.setConfig(activetime,casttime,maxnumberofparticles,numberofrotations,maxradius,particlespeed);
-        getLogger().info(String.valueOf(activetime));
+        this.portalmanager.setConfig(casttime,activationtime,activetime,maxnumberofparticles,numberofrotations,maxradius,particlespeed);
+    
+        this.netherworldname = this.customConfig.getString("NetherWorldName");
 
 
         // register stuff
@@ -100,6 +105,11 @@ public final class App extends JavaPlugin
     public PortalManager getPM()
     {
         return this.portalmanager;
+    }
+
+    public String getNetherWorldName()
+    {
+        return this.netherworldname;
     }
 
 

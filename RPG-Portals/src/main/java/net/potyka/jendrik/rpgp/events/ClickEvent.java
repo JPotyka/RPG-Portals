@@ -54,7 +54,7 @@ public class ClickEvent implements Listener
                             {
                                 if(app.getPM().createPortal(player, bedspawnlocation))
                                 {
-                                    player.sendMessage(ChatColor.GREEN+"Portal to your bed spawn location is now für 30 seconds open.");
+                                    player.sendMessage(ChatColor.GREEN+"Casting portal to your bed spawn location.");
                                 }
                                 else
                                 {
@@ -73,9 +73,9 @@ public class ClickEvent implements Listener
                     case ENDER_EYE:
                         if(player.hasPermission("rpgp.end"))
                         {
-                            if(app.getPM().createPortal(player, Bukkit.getWorld("world_the_end").getSpawnLocation()))
+                            if(app.getPM().createPortal(player, Bukkit.getWorld(app.getNetherWorldName()).getSpawnLocation()))
                             {
-                                player.sendMessage(ChatColor.GREEN+"Portal to the end is now für 30 seconds open.");
+                                player.sendMessage(ChatColor.GREEN+"Casting portal to the end.");
                             }
                             else
                             {
@@ -99,7 +99,7 @@ public class ClickEvent implements Listener
 
                                 if(app.getPM().createPortal(player, app.getTW().playersTownSpawn(player)))
                                 {
-                                    player.sendMessage(ChatColor.GREEN+"Portal to " + app.getTW().playersTownName(player)+ " is open für 30 seconds open.");
+                                    player.sendMessage(ChatColor.GREEN+"Casting portal to " + app.getTW().playersTownName(player)+ ".");
                                 }
                                 else
                                 {
@@ -176,7 +176,7 @@ public class ClickEvent implements Listener
 
                         if(app.getPM().createPortal(player,location))
                         {
-                            player.sendMessage(ChatColor.GREEN+"Portal to " + townname + " is open für 30 seconds open.");
+                            player.sendMessage(ChatColor.GREEN+"Casting portal to " + townname + ".");
                         }
                         else
                         {

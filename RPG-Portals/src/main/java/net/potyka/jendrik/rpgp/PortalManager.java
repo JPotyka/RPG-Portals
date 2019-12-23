@@ -70,7 +70,7 @@ public class PortalManager
 
     }
 
-    public void setConfig(long activetime, long casttime, int maxanimationparticles, int numberrotations, int maxradius, double particlespeed)
+    public void setConfig( long casttime, long activationtime, long activetime, int maxanimationparticles, int numberrotations, int maxradius, double particlespeed)
     {
         this.activetime = activetime;
         this.casttime = casttime;
@@ -262,6 +262,7 @@ public class PortalManager
                         this.portallist.get(i).setPortalStatus(PortalStatus.Active);
                         placePortalBlocks(i);
                         this.portallist.get(i).setUpdateTime(System.currentTimeMillis());
+                        this.portallist.get(i).getOwner().spigot().sendMessage(ChatMessageType.ACTION_BAR,TextComponent.fromLegacyText("Portal is now for "+ChatColor.GOLD+String.valueOf((int)this.activetime/1000)+" seconds"+ChatColor.WHITE+" open."));
                     }
                     else
                     {
@@ -345,9 +346,9 @@ public class PortalManager
             // partictle spawn position in a celindirc shape around the player with increasing radius
             double angle = 2*Math.PI*time/this.timeforrotation+this.angleoffset.get(np);
             double r = this.maxradius *(1-percentage);
-            double x = r*Math.cos(angle) + this.portallist.get(i).getCastingLocation().getBlockX() + 0.5 + (this.portallist.get(i).getDirectionX()+1)*percentage;
-            double z = r*Math.sin(angle) + this.portallist.get(i).getCastingLocation().getBlockZ() + 0.5 + (this.portallist.get(i).getDirectionZ()+1)*percentage;
-            double y = this.portallist.get(i).getCastingLocation().getBlockY() + 0.01*randomgenerator.nextInt((int)(300*(1-percentage))) + (this.portallist.get(i).getDirectionY()+1)*percentage;
+            double x = r*Math.cos(angle) + this.portallist.get(i).getCastingLocation().getBlockX() + 0.5 + (this.portallist.get(i).getDirectionX()+0.5)*percentage;
+            double z = r*Math.sin(angle) + this.portallist.get(i).getCastingLocation().getBlockZ() + 0.5 + (this.portallist.get(i).getDirectionZ()+0.5)*percentage;
+            double y = this.portallist.get(i).getCastingLocation().getBlockY() + 0.01*randomgenerator.nextInt((int)(300*(1-percentage))) + (this.portallist.get(i).getDirectionY()+0.5)*percentage;
 
             // particle movement direction
             double vectorx = -Math.sin(angle) ;
@@ -358,7 +359,6 @@ public class PortalManager
         }
         return true;
     }
-
 
     // Active portal
     private boolean placePortalBlocks(int n) // n portallist index

@@ -1,8 +1,11 @@
 
 
-PortalStatusTimes:
-  Active: 30000             
+NetherWorldName: "world_the_end"
+
+PortalStatusTimes:              # times in milliseconds
   Cast: 15000
+  Activation: 5000
+  Active: 30000             
 
 PortalCastAnimation:
   MaxNumberOfParticles: 12      # number of created particles 
