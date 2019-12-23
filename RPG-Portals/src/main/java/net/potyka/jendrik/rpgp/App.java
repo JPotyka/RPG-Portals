@@ -32,7 +32,7 @@ public final class App extends JavaPlugin
 
 
     public App()
-    {
+    { 
         this.portalmanager = new PortalManager(this);
         this.invmanager =  new InvManager(this);
     }
@@ -54,10 +54,14 @@ public final class App extends JavaPlugin
             e.printStackTrace();
         }
 
-        // load custom configs
+        // load custom configs for the portal manager
         long activetime = (long)this.customConfig.getInt("PortalStatusTimes.Active");
         long casttime = (long)this.customConfig.getInt("PortalStatusTimes.Cast");
-        this.portalmanager.setPortalStatusTimes(activetime,casttime);
+        int maxnumberofparticles = this.customConfig.getInt("PortalCastAnimation.MaxNumberOfParticles");
+        int numberofrotations = this.customConfig.getInt("PortalCastAnimation.NumberOfRotations");
+        int maxradius = this.customConfig.getInt("PortalCastAnimation.MaxRadius");
+        double particlespeed = this.customConfig.getDouble("PortalCastAnimation.ParticleSpeed");
+        this.portalmanager.setConfig(activetime,casttime,maxnumberofparticles,numberofrotations,maxradius,particlespeed);
         getLogger().info(String.valueOf(activetime));
 
 

@@ -15,17 +15,24 @@ public class Portal
     private Location destination;
     private long lastupdatetime;
     private ArrayList<BlockState> originalblockmaterial;
+    private Location portalcentre;
 
     // player
     private Player owner;
-    private Location castinglcocation;
+    private Location castinglocation;
+
+    // difference from castingposition to the portal
+    private double vectorx;
+    private double vectory;
+    private double vectorz;
+
 
 
     
 
     public enum PortalStatus
     {
-        Created,Cast,Active,ToRemove
+        Created,Cast,Activation,Active,ToRemove
     }
 
     private PortalStatus portalstatus;
@@ -37,7 +44,27 @@ public class Portal
         this.destination = destination;
         this.lastupdatetime = creationtime;
         this.owner = player;
-        this.castinglcocation = player.getLocation();
+        this.castinglocation = player.getLocation();
+
+        // calculate centre of the portal
+        double x = 0;
+        double y = 0;
+        double z = 0;
+        for (int i = 0; i < this.portalblockpositions.size(); i++) 
+        {
+            x = x + this.portalblockpositions.get(i).getBlockX();
+            y = y + this.portalblockpositions.get(i).getBlockY();
+            z = z + this.portalblockpositions.get(i).getBlockZ();
+        }
+        x = x/4;
+        y = y/4;
+        z = z/4;
+        this.portalcentre = new Location(player.getWorld(), x, y, z);
+
+        // calculate vector difference from castinglocation to portal centre
+        this.vectorx = this.portalcentre.getX() - this.castinglocation.getX();
+        this.vectory = this.portalcentre.getY() - this.castinglocation.getY();
+        this.vectorz = this.portalcentre.getZ() - this.castinglocation.getZ();
 
         this.portalstatus = PortalStatus.Created;
     }
@@ -84,7 +111,7 @@ public class Portal
 
     public Location getCastingLocation()
     {
-        return this.castinglcocation;
+        return this.castinglocation;
     }
 
     public PortalStatus getPortalStatus()
@@ -96,6 +123,22 @@ public class Portal
     {
         this.portalstatus = portalstatus;
     }
+
+    public double getDirectionX()
+    {
+        return this.vectorx;
+    }
+
+    public double getDirectionY()
+    {
+        return this.vectory;
+    }
+
+    public double getDirectionZ()
+    {
+        return this.vectorz;
+    }
+
 
 }
 

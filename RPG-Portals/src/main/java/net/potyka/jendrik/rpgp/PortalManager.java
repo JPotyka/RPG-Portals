@@ -3,6 +3,9 @@ import net.potyka.jendrik.rpgp.App;
 import net.potyka.jendrik.rpgp.Portal.PortalStatus;
 
 import java.util.ArrayList;
+import java.util.Random;
+
+import javax.lang.model.util.ElementScanner6;
 
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -27,16 +30,21 @@ public class PortalManager
     private ArrayList<Portal> portallist;
     private int nextid;
 
+    private Random randomgenerator;
+
     // portal status times
-    private long activetime;
     private long casttime;
+    private long activationtime;
+    private long activetime;
 
     // animation settings
     private int maxanimationparticles;
     private double numberrotations; // number of the rotations around the player in one cast time
     private double timeforrotation; // the time a particle have for one rotation 
-    private ArrayList<Double> angleoffset;
     private double maxradius; // max radius for the particles from the player
+    private double particlespeed; // speed of particles in the rotation
+    private ArrayList<Double> angleoffset;
+
 
 
     public PortalManager(App app)
@@ -45,21 +53,32 @@ public class PortalManager
         this.portallist = new ArrayList<>();
         this.nextid = 0;
 
+        this.randomgenerator = new Random();
+
+        this.casttime = 15000;
+        this.activationtime = 5000;
         this.activetime = 30000;
-        this.casttime = 5000;
-        this.maxanimationparticles = 6;
+
+
+        this.maxanimationparticles = 12;
         this.numberrotations = 2;
         this.maxradius = 3;
+        this.particlespeed = 0.01;
         this.angleoffset = new ArrayList<>();
 
         updateParticlePositions();
 
     }
 
-    public void setPortalStatusTimes(long activetime, long casttime)
+    public void setConfig(long activetime, long casttime, int maxanimationparticles, int numberrotations, int maxradius, double particlespeed)
     {
         this.activetime = activetime;
         this.casttime = casttime;
+
+        this.maxanimationparticles = maxanimationparticles;
+        this.numberrotations = numberrotations;
+        this.maxradius = maxradius;
+        this.particlespeed = particlespeed;
 
         updateParticlePositions();
     }
@@ -217,8 +236,7 @@ public class PortalManager
                     if((System.currentTimeMillis()-this.portallist.get(i).getLastUpdateTime())>this.casttime)
                     {
                         this.portallist.get(i).getOwner().spigot().sendMessage(ChatMessageType.ACTION_BAR,TextComponent.fromLegacyText("Portal incantation: "+ChatColor.GOLD+"100%"));
-                        this.portallist.get(i).setPortalStatus(PortalStatus.Active);
-                        placePortalBlocks(i);
+                        this.portallist.get(i).setPortalStatus(PortalStatus.Activation);
                         this.portallist.get(i).setUpdateTime(System.currentTimeMillis());
                     }
                     else
@@ -235,6 +253,19 @@ public class PortalManager
                             this.portallist.get(i).setPortalStatus(PortalStatus.ToRemove);
                             this.portallist.get(i).setUpdateTime(System.currentTimeMillis());
                         }
+                    }
+                break;
+
+                case Activation:
+                    if((System.currentTimeMillis()-this.portallist.get(i).getLastUpdateTime())>this.activationtime)
+                    {
+                        this.portallist.get(i).setPortalStatus(PortalStatus.Active);
+                        placePortalBlocks(i);
+                        this.portallist.get(i).setUpdateTime(System.currentTimeMillis());
+                    }
+                    else
+                    {
+                        activationAnimation(i);
                     }
                 break;
                 
@@ -262,25 +293,6 @@ public class PortalManager
         }
     }
 
-    // Cast portal
-    private boolean castAnimation(int i) // i portallist index
-    {
-        int time = (int)System.currentTimeMillis()-(int)this.portallist.get(i).getLastUpdateTime();
-        double percentage = 100*time/(int)this.casttime;
-        this.portallist.get(i).getOwner().spigot().sendMessage(ChatMessageType.ACTION_BAR,TextComponent.fromLegacyText("Portal casting: "+ChatColor.GOLD+String.valueOf((int)percentage)+"%"));
-
-        World world = this.portallist.get(i).getOwner().getWorld();
-
-        for(int np = 0; np < this.angleoffset.size(); np++)
-        {
-           double r = this.maxradius * percentage/100;
-           double x = r*Math.cos(2*Math.PI*time/this.timeforrotation+this.angleoffset.get(np)) + this.portallist.get(i).getCastingLocation().getBlockX() + 0.5;
-           double z = r*Math.sin(2*Math.PI*time/this.timeforrotation+this.angleoffset.get(np)) + this.portallist.get(i).getCastingLocation().getBlockZ() + 0.5;
-           double y = 1 + this.portallist.get(i).getCastingLocation().getBlockY();
-           world.spawnParticle(Particle.DRAGON_BREATH, x, y, z, 1);
-        }
-        return true;
-    }
 
     private void updateParticlePositions()
     {
@@ -291,6 +303,60 @@ public class PortalManager
         {
             this.angleoffset.add(stepsize*i);
         }
+    }
+
+    // Cast portal
+    private boolean castAnimation(int i) // i portallist index
+    {
+        int time = (int)System.currentTimeMillis()-(int)this.portallist.get(i).getLastUpdateTime();
+        double percentage = (double)time/(int)this.casttime;
+        this.portallist.get(i).getOwner().spigot().sendMessage(ChatMessageType.ACTION_BAR,TextComponent.fromLegacyText("Portal casting: "+ChatColor.GOLD+String.valueOf((int)(100*percentage))+"%"));
+
+        World world = this.portallist.get(i).getOwner().getWorld();
+
+        for(int np = 0; np < this.angleoffset.size(); np++)
+        {
+            // partictle spawn position in a celindirc shape around the player with increasing radius
+            double angle = 2*Math.PI*time/this.timeforrotation+this.angleoffset.get(np);
+            double r = this.maxradius * percentage;
+            double x = r*Math.cos(angle) + this.portallist.get(i).getCastingLocation().getBlockX() + 0.5;
+            double z = r*Math.sin(angle) + this.portallist.get(i).getCastingLocation().getBlockZ() + 0.5;
+            double y = this.portallist.get(i).getCastingLocation().getBlockY() + 0.01*randomgenerator.nextInt(300);
+
+            // particle movement direction
+            double vectorx = -Math.sin(angle) ;
+            double vectory = 0;
+            double vectorz = Math.cos(angle);
+
+            world.spawnParticle(Particle.DRAGON_BREATH, x, y, z, 0, vectorx, vectory, vectorz, this.particlespeed);
+        }
+        return true;
+    }
+
+    // Activation (animation) of the portal 
+    private boolean activationAnimation(int i) //i portal index
+    {
+        int time = (int)System.currentTimeMillis()-(int)this.portallist.get(i).getLastUpdateTime();
+        double percentage = (double)time/(int)this.activationtime;
+        World world = this.portallist.get(i).getOwner().getWorld();
+
+        for(int np = 0; np < this.angleoffset.size(); np++)
+        {
+            // partictle spawn position in a celindirc shape around the player with increasing radius
+            double angle = 2*Math.PI*time/this.timeforrotation+this.angleoffset.get(np);
+            double r = this.maxradius *(1-percentage);
+            double x = r*Math.cos(angle) + this.portallist.get(i).getCastingLocation().getBlockX() + 0.5 + (this.portallist.get(i).getDirectionX()+1)*percentage;
+            double z = r*Math.sin(angle) + this.portallist.get(i).getCastingLocation().getBlockZ() + 0.5 + (this.portallist.get(i).getDirectionZ()+1)*percentage;
+            double y = this.portallist.get(i).getCastingLocation().getBlockY() + 0.01*randomgenerator.nextInt((int)(300*(1-percentage))) + (this.portallist.get(i).getDirectionY()+1)*percentage;
+
+            // particle movement direction
+            double vectorx = -Math.sin(angle) ;
+            double vectory = 0;
+            double vectorz = Math.cos(angle);
+
+            world.spawnParticle(Particle.DRAGON_BREATH, x, y, z, 0, vectorx, vectory, vectorz, this.particlespeed*(1-percentage));
+        }
+        return true;
     }
 
 

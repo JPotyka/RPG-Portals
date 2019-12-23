@@ -1,5 +1,12 @@
 
 
 PortalStatusTimes:
-  Active: 30000
-  Cast: 10000
+  Active: 30000             
+  Cast: 15000
+
+PortalCastAnimation:
+  MaxNumberOfParticles: 12      # number of created particles 
+  NumberOfRotations: 2          # number of the rotations around the player in one cast time
+  MaxRadius: 3                  # maximal radius of the animation around the player
+  ParticleSpeed: 0.01           # speed of particles in the rotation
+
